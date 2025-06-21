@@ -1,5 +1,12 @@
 # Homework 4: Machine Translator
 
+The goal of this assignment was to perform machine translation from
+German to English using the Multi30K dataset, in order to better understand
+sequence to sequence models.
+
+The architecture used was a sequence-to-sequence transformer, with a pretrained
+model used for tokenization.
+
 ## Install Dependencies
 
 Install `pipenv` if you don't already have it:

@@ -1,5 +1,12 @@
 # Homework 3: Medical Image Segmentation
 
+The goal of this assignment was to perform image segmentation on medical images. The
+Retina Blood Vessel Segmentation dataset used where the objective is to segment
+retina blood vessels from retinal fundus images.
+
+We used a U-Net architecture to perform the segmentation and explored the effects of
+adding more layers to the U-Net, performing batch normalization, and adjusting hyperparameters.
+
 ## Install Dependencies
 
 Install `pipenv` if you don't already have it:

@@ -1,5 +1,13 @@
 # Homework 2: Convolutional Neural Network
 
+The goal of this assignment was to classify handwritten digits, using the MNIST dataset. We compared
+the performance across three different architectures:
+- Multilayer perceptron
+- LeNet-5
+- ResNet18
+as well as different choices of hyperparameters.
+
+
 ## Install Dependencies
 
 Create a virtual environment with `venv`. Install the requirements from
