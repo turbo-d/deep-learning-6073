@@ -1,0 +1,167 @@
+\documentclass{article}
+\usepackage{caption}
+\usepackage{graphicx}
+
+\title{CS 6073 Homework 3: Medical Image Segmentation}
+\author{
+    Luginbuhl, Dale \\
+    \texttt{luginbdr@mail.uc.edu}
+}
+\date{October 30th 2023}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Data}
+\subsection{How many data samples are included in the dataset?}
+The dataset is pre-split into a train dataset and a test dataset. The train dataset
+contains 80 samples. The test dataset contains 20 samples.
+
+\subsection{Which problem will this dataset try to address?}
+The goal is to predict the segmentation of retina blood vessels from
+high-resolution retinal fundus images. ``Accurate segmentation of
+blood vessels is a critical task in ophthalmology as it aids in
+the early detection and management of various retinal pathologies"
+
+\subsection{What is the dimension ranging in the dataset?}
+Each data sample has an input image of size 3x512x512 (CHW) pixels, for
+a total of 786,432 feature dimensions. Each feature (pixel) takes on
+integer values in the range $[0,255]$.
+\vspace{5mm}
+
+\noindent Each data sample has a label image of size 1x512x512 (CHW)
+pixels, for a total of 262,144 feature dimensions. Each feature (pixel) takes
+on integer values in the range $[0,1]$. Values of 0 represent background pixels, while
+values of 1 represent blood vessel pixels.
+
+\subsection{Does the dataset have any missing information? E.g., missing features.}
+The dataset does not have any missing information.
+
+\subsection{What is the label of this dataset?}
+The label of the dataset is a mask image representing the segmentation of
+retina blood vessels. The mask images are of size 1x512x512 (CHW) pixels, and
+the pixels take on integer values in the range $[0,1]$. Values of 0 represent
+background pixels, while values of 1 represent blood vessel pixels.
+
+\subsection{How many percent of data will you use for training, validation and testing?}
+The dataset is pre-split into 80 training samples and 20 testing samples. We will
+further split the training set into a training set and a validation set. The validation
+set will consists of 20 samples and the remaining training set will consist of 60 samples.
+
+The resulting percentage splits will then be:
+\begin{description}
+    \item Training : 60\%
+    \item Validation : 20\%
+    \item Test : 20\%
+\end{description}
+
+\subsection{What kind of data pre-processing will you use for your training dataset?}
+Besides converting the image tensors to floating point values, no data pre-processing
+was performed. With more time we would've explored data augmentation, as the data set
+was limited in size, and even the 2-layer unet models were likely complex enough to
+overfit.
+
+
+\section{Model}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{c|c|c}
+    Model & Dice & IoU \\
+    \hline
+    U-Net 2 layers & 0.0010 & 22.3292 \\
+    U-Net 3 layers & 0.0010 & 22.3292 \\
+    U-Net 4 layers & 0.0010 & 22.3292
+\end{tabular}
+\end{center}
+\caption{Comparison of model architectures}
+\label{table:models}
+\end{table}
+
+\section{Objective}
+We chose dice loss as the loss function to train the model. We chose
+this instead of cross-entropy because it is more robust to the class
+imbalance in the segmentation masks. There are many more background
+pixels than blood vessel pixels.
+
+\section{Optimization}
+We chose the Adam optimizer to take advantage of momentum in our optimization.
+Adam allows us to converge to an optimum value more quickly, and it allows
+provides the potential to escape from local minima.
+
+\section{Model Selection}
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{c|c|c}
+    Model & Dice \& IoU w/ norm & Dice \& IoU w/o norm \\
+    \hline
+    U-Net 2 layers & dice 0.0010, IoU 22.3292 & dice 0.0010, IoU 22.3292 \\
+    U-Net 3 layers & dice 0.0010, IoU 22.3292 & dice 0.0010, IoU 22.3292 \\
+    U-Net 4 layers & dice 0.0010, IoU 22.3292 & dice 0.0010, IoU 22.3292
+\end{tabular}
+\end{center}
+\caption{Model selection}
+\label{table:model_selection}
+\end{table}
+
+\subsection{How do you avoid overfit your model and underfit your model?}
+We could apply L1 or L2 regularization, dropout, or perform data augmentation.
+
+\section{Model Performance}
+
+In Figures 1 through 6 you can see the loss, dice, and IoU plots for the
+training and validation data sets for each model. Or well really, you probably
+can't see anything because the plots are too small. Don't worry though, you aren't
+missing any meaningful information. The data in the Figures, as well as in Tables
+1 and 2 came from real training runs, but they don't tell us anything other than
+that the training was not being performed correctly. Unfortunately, running short
+on both time and compute, I was unable to debug any further. The ``4 input image
+with label and models prediction" was not included as the images were useless
+given the invalid models. The code to generate the image \textit{was} written
+though and can be found in \textit{generate\_prediction\_image.py}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{./unet_2_layer/train_val_plots.png}
+    \caption{U-Net 2 layers training and validation Dice and IoU}
+    \label{fig:unet_2_layer}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{./unet_2_layer_batch_norm/train_val_plots.png}
+    \caption{U-Net 2 layers with batch norm training and validation Dice and IoU}
+    \label{fig:unet_2_layer_batch_norm}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{./unet_3_layer/train_val_plots.png}
+    \caption{U-Net 3 layers training and validation Dice and IoU}
+    \label{fig:unet_3_layer}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{./unet_3_layer_batch_norm/train_val_plots.png}
+    \caption{U-Net 3 layers with batch norm training and validation Dice and IoU}
+    \label{fig:unet_3_layer_batch_norm}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{./unet_4_layer/train_val_plots.png}
+    \caption{U-Net 4 layers training and validation Dice and IoU}
+    \label{fig:unet_4_layer}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{./unet_4_layer_batch_norm/train_val_plots.png}
+    \caption{U-Net 4 layers with batch norm training and validation Dice and IoU}
+    \label{fig:unet_4_layer_batch_norm}
+\end{figure}
+
+\end{document}
